@@ -1,0 +1,160 @@
+<!--Portfolio
+You can create a personal portfolio with the basic skills in CSS and HTML. This is yet again, one of the most common projects on web development for beginners. In a personal portfolio, you get to show a wide range of samples and skills and add your resume. You can add an image at the top where you can introduce yourself; below that, you can add contact information.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nandish Ladhania | Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-logo">Nandish</div>
+    <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#skills">Skills</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+    <p class="tagline">
+    <span id="typing"></span>
+</p>
+
+    <img src="profile.jpg" alt="Nandish Ladhania" class="profile">
+    <h1>Nandish Ladhania</h1>
+    <p>B.Tech Computer Science Engineering</p>
+    <p class="tagline">Web Development • AI • Programming</p>
+</header>
+
+<!-- ABOUT -->
+<section id="about">
+    <h2>About Me</h2>
+    <p>
+        I am a Computer Science Engineering student passionate about web development
+        and artificial intelligence. I build practical projects like AI assistants
+        and web platforms such as MovieFlix. I enjoy learning new technologies and
+        improving my development skills.
+    </p>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+    <h2>Technical Skills</h2>
+    <div class="skills">
+        <span>C</span>
+        <span>C++</span>
+        <span>Python</span>
+        <span>HTML</span>
+        <span>CSS</span>
+        <span>JavaScript</span>
+        <span>MySQL</span>
+        <span>Git</span>
+        <span>GitHub</span>
+    </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+    <h2>Projects</h2>
+
+    <!-- MovieFlix -->
+    <div class="project-card">
+        <h3>MovieFlix</h3>
+        <p>
+            Netflix-style movie streaming website with modern UI and categorized
+            content sections (Movies, Anime, Series).
+        </p>
+        <a href="https://github.com/nandishtech/movieflix.git" target="_blank">View on GitHub</a>
+    </div>
+
+    <!-- Jarvage / Arya -->
+    <div class="project-card">
+        <h3>Jarvage (AI Desktop Assistant)</h3>
+        <p>
+            Python-based AI assistant with voice commands, system control,
+            screenshots, and intelligent responses.
+        </p>
+        <a href="https://github.com/nandishtech/javage.git" target="_blank">View on GitHub</a>
+    </div>
+
+    <!-- Portfolio -->
+    <div class="project-card">
+        <img src="portfolio.jpg" alt="Portfolio Website">
+        <h3>Personal Portfolio</h3>
+        <p>
+            Responsive developer portfolio showcasing projects, skills,
+            and resume.
+        </p>
+    </div>
+
+</section>
+
+<!-- RESUME -->
+<section class="resume">
+    <h2>Resume</h2>
+    <a href="resume.pdf" download>Download Resume</a>
+</section>
+
+<!-- CONTACT -->
+<footer id="contact">
+    <h2>Contact</h2>
+    <p>📍 Jaipur, Rajasthan</p>
+    <p>📞 +91 7297041411</p>
+    <p>✉️ Nandishsharma.25102007@gmail.com</p>
+</footer>
+<script>
+const texts = [
+    "Web Development",
+    "AI Projects",
+    "Programming",
+    "Frontend Developer"
+];
+
+let count = 0;
+let index = 0;
+let currentText = "";
+let letter = "";
+
+function type() {
+    if (count === texts.length) {
+        count = 0;
+    }
+    currentText = texts[count];
+    letter = currentText.slice(0, ++index);
+
+    document.getElementById("typing").textContent = letter;
+
+    if (letter.length === currentText.length) {
+        setTimeout(() => {
+            erase();
+        }, 1500);
+    } else {
+        setTimeout(type, 80);
+    }
+}
+
+function erase() {
+    letter = currentText.slice(0, --index);
+    document.getElementById("typing").textContent = letter;
+
+    if (letter.length === 0) {
+        count++;
+        setTimeout(type, 300);
+    } else {
+        setTimeout(erase, 40);
+    }
+}
+
+type();
+</script>
+
+</body>
+</html>
