@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TaskFlow Planner</title>
+<style>
+:root{
+  --primary:#6366f1;
+  --accent:#8b5cf6;
+  --bg1:#eef2ff;
+  --bg2:#e0e7ff;
+  --card:rgba(255,255,255,.75);
+  --text:#111827;
+  --muted:#6b7280;
+}
+body.dark{
+  --bg1:#020617;
+  --bg2:#0f172a;
+  --card:rgba(15,23,42,.7);
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+}
+body{
+  margin:0;
+  font-family:"Inter","Segoe UI",system-ui;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--text);
+}
+/* NAVBAR */
+.navbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 26px;
+  background:rgba(255,255,255,.6);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(0,0,0,.05);
+}
+body.dark .navbar{background:rgba(2,6,23,.6)}
+.logo{
+  font-weight:800;
+  font-size:18px;
+  background:linear-gradient(90deg,var(--primary),var(--accent));
+  -webkit-background-clip:text;
+  color:transparent;
+}
+.nav-actions button{
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;
+  border:none;
+  padding:8px 14px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+/* HERO */
+.hero{
+  text-align:center;
+  padding:40px 20px 10px;
+}
+.hero h1{
+  font-size:32px;
+  margin:0 0 8px;
+  background:linear-gradient(90deg,var(--primary),var(--accent));
+  -webkit-background-clip:text;
+  color:transparent;
+}
+.hero p{color:var(--muted);margin:0}
+
+/* DASHBOARD STATS */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:14px;
+  max-width:1100px;
+  margin:20px auto;
+}
+.card{
+  background:var(--card);
+  backdrop-filter:blur(10px);
+  border-radius:16px;
+  padding:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,.15);
+}
+.stat-value{font-size:22px;font-weight:800}
+.stat-label{font-size:12px;color:var(--muted)}
+
+/* PLANNER */
+.app{
+  max-width:1150px;
+  margin:20px auto 40px;
+  background:var(--card);
+  backdrop-filter:blur(14px);
+  border-radius:22px;
+  padding:26px;
+  box-shadow:0 30px 60px rgba(0,0,0,.25);
+}
+.input-row{display:flex;gap:12px;margin-bottom:18px}
+input{
+  padding:10px 14px;
+  border-radius:12px;
+  border:1px solid rgba(99,102,241,.25);
+  background:rgba(255,255,255,.7);
+}
+body.dark input{background:rgba(2,6,23,.5)}
+button{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:10px 16px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:700;
+}
+.add{background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff}
+.edit{background:#f59e0b;color:#fff}
+.del{background:#ef4444;color:#fff}
+
+table{width:100%;border-collapse:separate;border-spacing:0;border-radius:16px;overflow:hidden}
+th,td{padding:10px;text-align:center;font-size:12px}
+th{background:rgba(99,102,241,.12)}
+tr:hover td{background:rgba(99,102,241,.06)}
+.task-cell{text-align:left;font-weight:700}
+.time{font-size:11px;color:var(--muted)}
+.footer{margin-top:14px;text-align:right}
+.badge{padding:6px 14px;border-radius:999px;color:#fff;font-weight:700}
+.good{background:#22c55e}
+.better{background:#3b82f6}
+.best{background:#a855f7}
+.progress-wrap{display:flex;justify-content:center}
+
+/* FOOTER */
+.footer-site{
+  text-align:center;
+  padding:20px;
+  font-size:12px;
+  color:var(--muted);
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="logo">TaskFlow</div>
+  <div class="nav-actions">
+    <button onclick="toggleTheme()">🌙 Theme</button>
+  </div>
+</div>
+
+<div class="hero">
+  <h1>Plan Your Week Efficiently</h1>
+  <p>Track tasks, stay productive, achieve goals</p>
+</div>
+
+<div class="stats">
+  <div class="card"><div class="stat-value" id="statTasks">0</div><div class="stat-label">Tasks</div></div>
+  <div class="card"><div class="stat-value" id="statDone">0</div><div class="stat-label">Completed Checks</div></div>
+  <div class="card"><div class="stat-value" id="statAvg">Good</div><div class="stat-label">Performance</div></div>
+</div>
+
+<div class="app">
+  <div class="input-row">
+    <input type="text" id="taskInput" placeholder="Task name">
+    <input type="time" id="timeInput">
+    <button class="add" onclick="addTask()">➕ Add Task</button>
+  </div>
+
+  <table id="planner">
+    <thead>
+      <tr>
+        <th>Task</th>
+        <th>Mon</th><th>Tue</th><th>Wed</th>
+        <th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th>
+        <th>Progress</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="footer">
+    Average: <span id="avgBadge" class="badge good">Good</span>
+  </div>
+</div>
+
+<div class="footer-site">© TaskFlow Planner • Fully working productivity web app</div>
+
+<script>
+let tasks = JSON.parse(localStorage.getItem("tasks")||"[]");
+let dark = localStorage.getItem("dark")==="1";
+if(dark) document.body.classList.add("dark");
+const days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+
+function toggleTheme(){
+ document.body.classList.toggle("dark");
+ localStorage.setItem("dark",document.body.classList.contains("dark")?"1":"0");
+}
+function save(){localStorage.setItem("tasks",JSON.stringify(tasks));}
+
+function addTask(){
+ const text=taskInput.value.trim();
+ if(!text) return;
+ tasks.push({id:Date.now(),text,time:timeInput.value||"",createdAt:new Date(),completed:{}});
+ taskInput.value="";timeInput.value="";
+ save();render();
+}
+function toggleDay(id,day){
+ const t=tasks.find(x=>x.id===id);
+ if(!t) return;
+ t.completed[day]=!t.completed[day];
+ save();render();
+}
+function editTask(id){
+ const t=tasks.find(x=>x.id===id);
+ if(!t) return;
+ const nt=prompt("Edit task",t.text);
+ if(nt===null) return;
+ const tm=prompt("Edit time",t.time||"");
+ t.text=nt.trim()||t.text;
+ t.time=tm||t.time;
+ save();render();
+}
+function deleteTask(id){tasks=tasks.filter(x=>x.id!==id);save();render();}
+
+function calcStats(){
+ let checks=0,total=0;
+ tasks.forEach(t=>days.forEach(d=>{total++;if(t.completed[d])checks++;}));
+ const pct=total?checks/total:0;
+ let label="Good";
+ if(pct>0.75) label="Best";
+ else if(pct>0.4) label="Better";
+ return {checks,label};
+}
+
+function render(){
+ const body=planner.querySelector("tbody");
+ body.innerHTML="";
+ let doneChecks=0;
+ tasks.forEach(t=>{
+  const tr=document.createElement("tr");
+  const tdTask=document.createElement("td");
+  tdTask.className="task-cell";
+  tdTask.innerHTML=`${t.text}<div class=time>${t.time||""}</div><div class=time>${new Date(t.createdAt).toLocaleString()}</div>`;
+  tr.appendChild(tdTask);
+
+  let doneCount=0;
+  days.forEach(d=>{
+    const td=document.createElement("td");
+    const cb=document.createElement("input");
+    cb.type="checkbox";
+    cb.checked=!!t.completed[d];
+    if(t.completed[d]){doneCount++;doneChecks++;}
+    cb.onchange=()=>toggleDay(t.id,d);
+    td.appendChild(cb);
+    tr.appendChild(td);
+  });
+
+  const percent=Math.round((doneCount/days.length)*100);
+  const color=percent>75?"#22c55e":percent>40?"#3b82f6":"#a855f7";
+  const tdProg=document.createElement("td");
+  tdProg.className="progress-wrap";
+  tdProg.innerHTML=`<svg width=48 height=48 viewBox="0 0 36 36">
+   <circle cx=18 cy=18 r=16 stroke="#e5e7eb" stroke-width=3 fill=none/>
+   <circle cx=18 cy=18 r=16 stroke="${color}" stroke-width=3 fill=none
+    stroke-dasharray="${percent},100" stroke-linecap=round
+    transform="rotate(-90 18 18)"/>
+   <text x=18 y=20 font-size=8 text-anchor=middle fill="${color}">${percent}%</text>
+  </svg>`;
+  tr.appendChild(tdProg);
+
+  const tdAct=document.createElement("td");
+  const e=document.createElement("button");
+  e.className="edit";e.innerHTML="✏️";e.onclick=()=>editTask(t.id);
+  const d=document.createElement("button");
+  d.className="del";d.innerHTML="🗑";d.onclick=()=>deleteTask(t.id);
+  tdAct.appendChild(e);tdAct.appendChild(d);
+  tr.appendChild(tdAct);
+
+  body.appendChild(tr);
+ });
+
+ const {checks,label}=calcStats();
+ avgBadge.textContent=label;
+ avgBadge.className="badge "+label.toLowerCase();
+ statTasks.textContent=tasks.length;
+ statDone.textContent=checks;
+ statAvg.textContent=label;
+}
+
+render();
+</script>
+</body>
+</html>
